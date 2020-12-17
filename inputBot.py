@@ -2,6 +2,9 @@ import os
 import discord
 from dotenv import load_dotenv
 
+import parsers
+import grouper
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
@@ -77,7 +80,7 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
             else:
                 picker[content[2]] = []
                 for i, name in enumerate(content):
-                    if i > 1:
+                    if i > 2:
                         picker[content[2]].append(name)
         
         else:
@@ -89,13 +92,17 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
             else:
                 receiver[content[2]] = []
                 for i, name in enumerate(content):
-                    if i > 1:
+                    if i > 2:
                         receiver[content[2]].append(name)
 
-        print(picker[content[1]])
+        print(picker[content[2]])
     
 
     print(picker)
     print(receiver)
+
+parseResult = parsers.parseInput(picker, receiver)
+
+groupResult = grouper.grouping(parseResult[0], parseResult[1])
 
 client.run(TOKEN)
