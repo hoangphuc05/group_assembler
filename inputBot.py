@@ -113,7 +113,9 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
 
         groupResult = grouper.grouping(parseResult[0], parseResult[1])
 
-        print(groupResult)
+        parsedOutput = parsers.parseOutput(picker, receiver, groupResult)
+
+        print(parsedOutput)
 
 
         #print(picker[content[2]])
