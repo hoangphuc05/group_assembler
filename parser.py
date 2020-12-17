@@ -1,3 +1,12 @@
+# how to use the functions:
+# after getting the input from discord bot,
+# call parseInput with map of pickers and receivers
+    # it returns a tuple
+
+# after getting the result from the grouper,
+# call parseOutput with map of pickers, receivers and output
+    # it returns a map with type <String, String>
+
 def parseOneInput(pickers):
     sortedPick = sorted(pickers)
     parseMap = {}
