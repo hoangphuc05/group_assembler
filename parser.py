@@ -20,6 +20,7 @@ def parseInput(picker, receiver):
     return [parseOneInput(picker), parseOneInput(receiver)]
 
 
+
 def parseOutput(picker, receiver, outputMap):
     sortedPick = sorted(picker)
     parseMap = {}
