@@ -19,11 +19,13 @@ async def on_ready():
 picker = {}
 receiver = {}
 roles = []
-
+categories = []
+newChannels = []
+newVoices = []
 
 @client.event
 async def on_message(message):
-    global picker, receiver, roles
+    global picker, receiver, roles, categories, newChannels, newVoices
     content = message.content.strip().split()
     if len(content) < 1:
         return
@@ -136,12 +138,31 @@ Run the algoritm: `~runGroup`
         #react to message
         await message.add_reaction('✅')
 
-    elif content[0] == "~roleCleanUp":
+    elif content[0] == "~cleanUp":
+        try:
+            for i in newChannels:
+                await i.delete()
+        except Exception as e:
+            print(e)
+
+        try:
+            for i in newVoices:
+                await i.delete()
+        except Exception as e:
+            print(e)
+        
+        try:
+            for i in categories:
+                await i.delete()
+        except Exception as e:
+            print(e)
+
         try:
             for i in roles:
                 await i.delete()
         except Exception as e:
             print(e)
+
 
     elif content[0] == "~runGroup":
         currentGuild = client.get_guild(653133437087121419)
@@ -154,27 +175,36 @@ Run the algoritm: `~runGroup`
 
         print(parsedOutput)
         i = 0
-        try:
-            for x,y in parsedOutput.items():
-                
-                await message.channel.send(f"Group {i+1} have these members: {x}, {y}")
-                i += 1
 
+        for x,y in parsedOutput.items():
+            i += 1
+            await message.channel.send(f"Group {i} have these members: {x}, {y}")
+            
+            try:
                 #try:
                     #get 2 user: user1
-                roles.append (await message.guild.create_role(name = f"Group {i+1}"))
+                roles.append (await message.guild.create_role(name = f"Group {i}"))
                 user1 = currentGuild.get_member(int(x[3:-1]))
                 user2 = currentGuild.get_member(int(y[3:-1]))
+
+                
 
                 #await asyncio.sleep(0.3)
                 await user1.add_roles(roles[-1])
                 await user2.add_roles(roles[-1])
 
+                #create text Channel
+                categories.append(await currentGuild.create_category(f"Group {i}"))
                 await asyncio.sleep(0.3)
-                # except Exception as e:
-                #     print(e)
-        except Exception as e:
-            print(e)
+                newChannels.append(await currentGuild.create_text_channel(f"Group {i} text", category = categories[-1]))
+                newVoices.append(await categories[-1].create_voice_channel(f"Group {i} voice"))
+
+
+
+            except Exception as e:
+                print(e)
+            # except Exception as e:
+            #     print(e)
 
         #react to message
         await message.add_reaction('✅')
