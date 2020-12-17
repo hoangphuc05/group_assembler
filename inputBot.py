@@ -69,6 +69,19 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
                     receiver[content[2]][content[3]] = content[4]
                 else:
                     message.channel.send(f"{content[1]} doesn't have that many referenecs!")
+
+    elif content[0] == "~clearReference":
+        if content[1] == "0":
+            if content[2] in picker:
+                picker[content[2]] == []
+            else:
+                message.channel.send("No person can be found")
+        
+        elif content[1] == "1":
+            if content[2] in receiver:
+                receiver[content[2]] == []
+            else:
+                message.channel.send("No person can be found")
     
     elif content[0] == "~importReference":
         if content[1] == "0":
@@ -95,7 +108,15 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
                     if i > 2:
                         receiver[content[2]].append(name)
 
-        print(picker[content[2]])
+    elif content[0] == "~runGroup":
+        parseResult = parsers.parseInput(picker, receiver)
+
+        groupResult = grouper.grouping(parseResult[0], parseResult[1])
+
+        print(groupResult)
+
+
+        #print(picker[content[2]])
     
 
     print(picker)
@@ -106,3 +127,9 @@ parseResult = parsers.parseInput(picker, receiver)
 groupResult = grouper.grouping(parseResult[0], parseResult[1])
 
 client.run(TOKEN)
+
+
+
+#test case
+# {'A': ['0', '3', '2', '1'], 'B': ['2', '3', '1', '0'], 'C': ['0', '2', '1', '3'], 'D': ['1', '2', '0', '3']}
+# {'0': ['A', 'B', 'C', 'D'], '1': ['B', 'C', 'D', 'A'], '2': ['B', 'D', 'A', 'C'], '3': ['A', 'C', 'B', 'D']}
