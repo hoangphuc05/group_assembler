@@ -54,7 +54,7 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
             if content[2] not in picker:
                 message.channel.send(f"{content[2]} doesn't have any reference!")
             else:
-                if len(picker(content[2])) <= (int(content[3]) + 1):
+                if len(picker[content[2]]) <= (int(content[3]) + 1):
                     #replace reference
                     picker[content[2]][content[3]] = content[4]
 
@@ -64,7 +64,7 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
             if content[2] not in receiver:
                 message.channel.send(f"{content[2]} doesn't have any reference!")
             else:
-                if len(receiver(content[2])) <= (int(content[3]) + 1):
+                if len(receiver[content[2]]) <= (int(content[3]) + 1):
                     #replace reference
                     receiver[content[2]][content[3]] = content[4]
                 else:
