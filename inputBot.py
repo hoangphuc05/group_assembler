@@ -7,6 +7,10 @@ import grouper
 import asyncio
 
 load_dotenv()
+
+
+#The discord token should be in .env file
+#DISCORD_TOKEN= tOkenHer3
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
