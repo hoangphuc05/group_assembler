@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 import parsers
 import grouper
+import asyncio
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -17,10 +18,12 @@ async def on_ready():
 
 picker = {}
 receiver = {}
+roles = []
 
 
 @client.event
 async def on_message(message):
+    global picker, receiver, roles
     content = message.content.strip().split()
     if len(content) < 1:
         return
@@ -32,7 +35,14 @@ Welcome to project group Generator!
 Set reference: `~addReference <Group index (0-1)> <name of picker> <name of person>`
 Edit reference: `~editReference <Group index (0-1)> <name of picker> <index of reference> <name of person>`
 Import reference: `~importReference <Group index (0-1)> <name of picker> <list of people, seperated by space>`
+Clear reference: `~clearReference <Group index (0-1)> <name of the person to clear reference>`
+Reset all: `~resetAll`
+Run the algoritm: `~runGroup`
         """)
+
+
+    if content[0] == "~test":
+        message.author.add_roles()
     if content[0] == "~addReference":
         if content[1] == "0":
             if content[2] in picker:
@@ -47,41 +57,50 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
             else:
                 receiver[content[2]] = [content[3]]
 
+        #react to message
+        await message.add_reaction('✅')
+
 
     #edit reference
     elif content[0] == "~editReference":
         if content[1] == "0":
             if content[2] not in picker:
-                message.channel.send(f"{content[2]} doesn't have any reference!")
+                await message.channel.send(f"{content[2]} doesn't have any reference!")
             else:
                 if len(picker[content[2]]) <= (int(content[3]) + 1):
                     #replace reference
                     picker[content[2]][content[3]] = content[4]
 
                 else:
-                    message.channel.send(f"{content[1]} doesn't have that many referenecs!")
+                    await message.channel.send(f"{content[1]} doesn't have that many referenecs!")
         else:
             if content[2] not in receiver:
-                message.channel.send(f"{content[2]} doesn't have any reference!")
+                await message.channel.send(f"{content[2]} doesn't have any reference!")
             else:
                 if len(receiver[content[2]]) <= (int(content[3]) + 1):
                     #replace reference
                     receiver[content[2]][content[3]] = content[4]
                 else:
-                    message.channel.send(f"{content[1]} doesn't have that many referenecs!")
+                    await message.channel.send(f"{content[1]} doesn't have that many referenecs!")
+
+        #react to message
+        await message.add_reaction('✅')
 
     elif content[0] == "~clearReference":
         if content[1] == "0":
             if content[2] in picker:
                 picker[content[2]] == []
             else:
-                message.channel.send("No person can be found")
+                await message.channel.send("No person can be found")
         
         elif content[1] == "1":
             if content[2] in receiver:
                 receiver[content[2]] == []
             else:
-                message.channel.send("No person can be found")
+                await message.channel.send("No person can be found")
+        
+        #react to message
+        await message.add_reaction('✅')
     
     elif content[0] == "~importReference":
         if content[1] == "0":
@@ -108,7 +127,25 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
                     if i > 2:
                         receiver[content[2]].append(name)
 
+        #react to message
+        await message.add_reaction('✅')
+
+    elif content[0] == "~resetAll":
+        picker = {}
+        receiver = {}
+        #react to message
+        await message.add_reaction('✅')
+
+    elif content[0] == "~roleCleanUp":
+        try:
+            for i in roles:
+                await i.delete()
+        except Exception as e:
+            print(e)
+
     elif content[0] == "~runGroup":
+        currentGuild = client.get_guild(653133437087121419)
+
         parseResult = parsers.parseInput(picker, receiver)
 
         groupResult = grouper.grouping(parseResult[0], parseResult[1])
@@ -116,6 +153,31 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
         parsedOutput = parsers.parseOutput(picker, receiver, groupResult)
 
         print(parsedOutput)
+        i = 0
+        try:
+            for x,y in parsedOutput.items():
+                
+                await message.channel.send(f"Group {i+1} have these members: {x}, {y}")
+                i += 1
+
+                #try:
+                    #get 2 user: user1
+                roles.append (await message.guild.create_role(name = f"Group {i+1}"))
+                user1 = currentGuild.get_member(int(x[3:-1]))
+                user2 = currentGuild.get_member(int(y[3:-1]))
+
+                #await asyncio.sleep(0.3)
+                await user1.add_roles(roles[-1])
+                await user2.add_roles(roles[-1])
+
+                await asyncio.sleep(0.3)
+                # except Exception as e:
+                #     print(e)
+        except Exception as e:
+            print(e)
+
+        #react to message
+        await message.add_reaction('✅')
 
 
         #print(picker[content[2]])
@@ -124,9 +186,9 @@ Import reference: `~importReference <Group index (0-1)> <name of picker> <list o
     print(picker)
     print(receiver)
 
-parseResult = parsers.parseInput(picker, receiver)
+# parseResult = parsers.parseInput(picker, receiver)
 
-groupResult = grouper.grouping(parseResult[0], parseResult[1])
+# groupResult = grouper.grouping(parseResult[0], parseResult[1])
 
 client.run(TOKEN)
 
