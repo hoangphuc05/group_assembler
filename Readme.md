@@ -15,6 +15,7 @@ While tackling this problem, our first framework we wanted to build was the stru
 4. Put in the `.env` file your bot token as `DISCORD_TOKEN= B0tTok3nHere`
 5. Run the `inputBot.py`
 6. The bot prefix is `~`, the reference can be import by using `~importReference <Group index (0-1)> <name of picker> <list of people, seperated by space>`. Other command can be found when run `~help` to call the bot
+7. Once finish running, the bot will create new text channel and voice channel for each group, and assign role to each user base on which group they are in
 
 ## How to problem is solve
 1.	We need to create two different and unique set of groups with even and equal number of elements
