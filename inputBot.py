@@ -31,10 +31,14 @@ newVoices = []
 async def on_message(message):
     global picker, receiver, roles, categories, newChannels, newVoices
     content = message.content.strip().split()
+
+    #if here is no content or the message is from the bot itself, ignore it.
     if len(content) < 1:
         return
     if message.author == client.user:
         return
+
+    #this print out the help message
     if content[0] == "~help":
         await message.channel.send("""
 Welcome to project group Generator!
@@ -49,6 +53,8 @@ Run the algoritm: `~runGroup`
 
     if content[0] == "~test":
         message.author.add_roles()
+
+    #add a single reference to a person
     if content[0] == "~addReference":
         if content[1] == "0":
             if content[2] in picker:
@@ -67,7 +73,7 @@ Run the algoritm: `~runGroup`
         await message.add_reaction('✅')
 
 
-    #edit reference
+    #edit reference of a person
     elif content[0] == "~editReference":
         if content[1] == "0":
             if content[2] not in picker:
@@ -92,11 +98,14 @@ Run the algoritm: `~runGroup`
         #react to message
         await message.add_reaction('✅')
 
+    
+    #clear a reference from a person
     elif content[0] == "~clearReference":
         if content[1] == "0":
             if content[2] in picker:
                 picker[content[2]] == []
-            else:
+            
+            else: # if the person is not found in the dictionary
                 await message.channel.send("No person can be found")
         
         elif content[1] == "1":
@@ -108,8 +117,11 @@ Run the algoritm: `~runGroup`
         #react to message
         await message.add_reaction('✅')
     
+    #add multiple reference to a single person
     elif content[0] == "~importReference":
         if content[1] == "0":
+
+            # if the person is already in the dictionary, append to the list of reference, if not create a new list
             if content[2] in picker:
                 for i, name in enumerate(content):
                     if i > 2:
@@ -136,12 +148,14 @@ Run the algoritm: `~runGroup`
         #react to message
         await message.add_reaction('✅')
 
+    # reset all the reference
     elif content[0] == "~resetAll":
         picker = {}
         receiver = {}
         #react to message
         await message.add_reaction('✅')
 
+    # delete the role and all the channel related to this run
     elif content[0] == "~cleanUp":
         try:
             for i in newChannels:
@@ -168,22 +182,33 @@ Run the algoritm: `~runGroup`
             print(e)
 
 
+    # run the algorithm
     elif content[0] == "~runGroup":
+        #get the current server.
         currentGuild = client.get_guild(653133437087121419)
 
+        #run th algorithm
         parseResult = parsers.parseInput(picker, receiver)
 
         groupResult = grouper.grouping(parseResult[0], parseResult[1])
 
+        # parse the output
         parsedOutput = parsers.parseOutput(picker, receiver, groupResult)
 
         print(parsedOutput)
+        
+        # this will count the number of group
         i = 0
 
+        # loop through every group
+        # x, y is the 2 name of the people in the group
         for x,y in parsedOutput.items():
             i += 1
+            
+            #print out the group index and the 2 name of the member
             await message.channel.send(f"Group {i} have these members: {x}, {y}")
             
+            # Try to create role and create text channel for these member.
             try:
                 #try:
                     #get 2 user: user1
